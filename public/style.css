@@ -1,0 +1,16 @@
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: xx-large;
+  }
+  .header > h1 {
+    border: 5px solid black;
+    padding: 10px;
+    border-radius: 15px;
+  }
+  
+  .description {
+      display: flex;
+      justify-content: center;
+  }
