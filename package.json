@@ -1,0 +1,24 @@
+{
+  "name": "url-shortener-microservice",
+  "version": "1.0.0",
+  "description": "This is a microservice that you can POST a url and it will return a JSON response with the original url and a corresponding shortened url. When you go to /api/shorturl/<short_url>, you will be redirected to the original url.",
+  "keywords": [
+    "express",
+    "freeCodeCamp",
+    "shortURL",
+    "api"
+  ],
+  "license": "MIT",
+  "author": "Edward Lale",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "go": "node --watch index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.12.4"
+  }
+}
