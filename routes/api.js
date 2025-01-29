@@ -3,50 +3,52 @@ const Url = require("../models/Url");
 const dns = require("dns");
 const router = express.Router();
 
-router.post("/api/shorturl", async (req, res) => {
+router.post('/shorturl', async (req, res) => {
   const inputUrl = req.body.url;
 
   try {
+
     const parsedUrl = new URL(inputUrl);
 
-    dns.lookup(parsedUrl.hostname, async (error, address) => {
-      if (err || !address) {
-        return res.json({ err: "invalid url" });
+    dns.lookup(parsedUrl.hostname, async (err) => {
+      if (err) return res.json({ error: 'invalid url' });
+
+      let urlEntry = await Url.findOne({ original_url: inputUrl });
+      if (!urlEntry) {
+
+        const lastEntry = await Url.findOne().sort({ short_url: -1 });
+        const nextShortUrl = lastEntry ? lastEntry.short_url + 1 : 1;
+
+        urlEntry = new Url({
+          original_url: inputUrl,
+          short_url: nextShortUrl,
+        });
+        await urlEntry.save();
       }
 
-      const lastEntry = await Url.findOne().sort({ short_url: -1 });
-      const nextShortUrl = lastEntry ? lastEntry.short_url + 1 : 1;
-
-      const newUrl = new Url({
-        original_url: inputUrl,
-        short_url: nextShortUrl,
-      });
-
-      await newUrl.save();
-
       res.json({
-        original_url: newUrl.original_url,
-        short_url: newUrl.short_url,
+        original_url: urlEntry.original_url,
+        short_url: urlEntry.short_url,
       });
     });
-  } catch (err) {
-    res.json({ err: "invalid url" });
+  } catch (error) {
+    res.json({ error: 'invalid url' });
   }
 });
 
-router.get("api/shorturl/:short_url", async (req, res) => {
+router.get('/shorturl/:short_url', async (req, res) => {
   const shortUrl = req.params.short_url;
 
   try {
-    const urlEntry = await Url.findOne({ shortUrl: shortUrl });
+    const urlEntry = await Url.findOne({ short_url: shortUrl });
 
     if (!urlEntry) {
-      return res.status(404).json({ err: "No short URL found" });
+      return res.status(404).json({ error: 'No short URL found' });
     }
 
     res.redirect(urlEntry.original_url);
-  } catch (err) {
-    res.status(500).json({ err: "Server Error" });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
